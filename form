@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pl"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Koszyki</title>
+</head>
+<body>
+
+<h1>Panel koszyków</h1>
+
+<h2>Utwórz nowy koszyk</h2>
+
+<form th:action="@{/panel/koszyki}" method="post">
+    <label for="nazwa">Nazwa koszyka</label>
+
+    <input id="nazwa"
+           type="text"
+           name="nazwa"
+           required>
+
+    <button type="submit">
+        Utwórz
+    </button>
+</form>
+
+<hr>
+
+<h2>Dodaj książkę do koszyka</h2>
+
+<p th:if="${koszyki.empty}">
+    Najpierw utwórz koszyk.
+</p>
+
+<form th:unless="${koszyki.empty}"
+      th:action="@{/panel/dodaj-ksiazke}"
+      method="post">
+
+    <label for="koszykId">Koszyk</label>
+
+    <select id="koszykId"
+            name="koszykId"
+            required>
+
+        <option value="">Wybierz koszyk</option>
+
+        <option th:each="koszyk : ${koszyki}"
+                th:value="${koszyk.id}"
+                th:text="${koszyk.nazwa}">
+        </option>
+    </select>
+
+    <label for="ksiazkaId">Książka</label>
+
+    <select id="ksiazkaId"
+            name="ksiazkaId"
+            required>
+
+        <option value="">Wybierz książkę</option>
+
+        <option th:each="ksiazka : ${ksiazki}"
+                th:value="${ksiazka.id}"
+                th:text="|${ksiazka.tytul} - ${ksiazka.cena} zł|">
+        </option>
+    </select>
+
+    <button type="submit">
+        Dodaj książkę
+    </button>
+</form>
+
+<hr>
+
+<h2>Twoje koszyki</h2>
+
+<p th:if="${koszyki.empty}">
+    Nie masz jeszcze żadnych koszyków.
+</p>
+
+<div th:each="koszyk : ${koszyki}">
+    <h3 th:text="${koszyk.nazwa}"></h3>
+
+    <p th:if="${koszyk.ksiazki.empty}">
+        Koszyk jest pusty.
+    </p>
+
+    <ul>
+        <li th:each="ksiazka : ${koszyk.ksiazki}"
+            th:text="|${ksiazka.tytul} - ${ksiazka.cena} zł|">
+        </li>
+    </ul>
+
+    <p>
+        Razem:
+        <strong th:text="|${koszyk.obliczSume()} zł|"></strong>
+    </p>
+</div>
+
+</body>
+</html>
