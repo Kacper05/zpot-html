@@ -1,0 +1,61 @@
+@Controller
+@RequestMapping("/panel")
+public class PanelController {
+
+    private final KoszykService koszykService;
+    private final KsiazkaRepository ksiazkaRepository;
+
+    public PanelController(
+            KoszykService koszykService,
+            KsiazkaRepository ksiazkaRepository
+    ) {
+        this.koszykService = koszykService;
+        this.ksiazkaRepository = ksiazkaRepository;
+    }
+
+    @GetMapping
+    public String panel(
+            Principal principal,
+            Model model
+    ) {
+        model.addAttribute(
+                "koszyki",
+                koszykService.pobierzKoszyki(principal.getName())
+        );
+
+        model.addAttribute(
+                "ksiazki",
+                ksiazkaRepository.findAll()
+        );
+
+        return "panel";
+    }
+
+    @PostMapping("/koszyki")
+    public String utworzKoszyk(
+            @RequestParam String nazwa,
+            Principal principal
+    ) {
+        koszykService.utworz(
+                principal.getName(),
+                nazwa
+        );
+
+        return "redirect:/panel";
+    }
+
+    @PostMapping("/dodaj-ksiazke")
+    public String dodajKsiazke(
+            @RequestParam Long koszykId,
+            @RequestParam Long ksiazkaId,
+            Principal principal
+    ) {
+        koszykService.dodajKsiazke(
+                koszykId,
+                ksiazkaId,
+                principal.getName()
+        );
+
+        return "redirect:/panel";
+    }
+}
